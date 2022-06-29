@@ -384,6 +384,8 @@ jQuery(function($){
 
     term.fitAddon = new window.FitAddon.FitAddon();
     term.loadAddon(term.fitAddon);
+    term.WebLinksAddon = new window.WebLinksAddon.WebLinksAddon();
+    term.loadAddon(term.WebLinksAddon);
 
     console.log(url);
     if (!msg.encoding) {
@@ -476,7 +478,7 @@ jQuery(function($){
     wssh.resize = function(cols, rows) {
       // for console use
       if (term === undefined) {
-        console.log('Terminal was already destroryed');
+        console.log('Terminal was already destroyed');
         return;
       }
 

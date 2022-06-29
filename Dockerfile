@@ -1,18 +1,20 @@
-FROM python:3-alpine
+FROM python:3.8-alpine
 
-LABEL maintainer='<author>'
-LABEL version='0.0.0-dev.0-build.0'
+RUN addgroup webssh && \
+  adduser -Ss /bin/false -g webssh webssh
 
-ADD . /code
 WORKDIR /code
+
+COPY --chown=webssh:webssh requirements.txt .
+
 RUN \
-  apk add --no-cache libc-dev libffi-dev gcc && \
+  apk add --no-cache tini libc-dev libffi-dev gcc && \
   pip install -r requirements.txt --no-cache-dir && \
-  apk del gcc libc-dev libffi-dev && \
-  addgroup webssh && \
-  adduser -Ss /bin/false -g webssh webssh && \
-  chown -R webssh:webssh /code
+  apk del gcc libc-dev libffi-dev
+  
+COPY --chown=webssh:webssh . /code
 
 EXPOSE 8888/tcp
 USER webssh
-CMD ["python", "run.py"]
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["python", "run.py", "--fbidhttp=false", "--maxconn=500"]
